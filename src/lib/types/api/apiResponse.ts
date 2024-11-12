@@ -1,3 +1,4 @@
-export interface ApiResponse<T> {
+export interface ApiPaginatedResponse<T> {
   data: T;
+  totalItems: string | null;
 }

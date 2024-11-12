@@ -9,7 +9,7 @@ export interface Bill {
   sellerId: number;
   creditCardId: number;
   comment: string;
-  total: string;
+  total: number;
 }
 
 export async function getBill(id: string): Promise<Bill | null> {
@@ -20,8 +20,8 @@ export async function getBill(id: string): Promise<Bill | null> {
   return await response.json();
 }
 
-export async function getBills(): Promise<Bill[] | null> {
-  const response = await fetch(`${API_BASE_URL}/Bill`);
+export async function getBills(id: string): Promise<Bill[] | null> {
+  const response = await fetch(`${API_BASE_URL}/Bill?customerId=${id}`);
 
   if (!response.ok) return null;
 

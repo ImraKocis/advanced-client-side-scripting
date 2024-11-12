@@ -1,18 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
-import {
-  getSubCategories,
-  getSubCategory,
-} from "@/api/sub-category/sub-category.ts";
+import { getSubCategories } from "@/api/sub-category/sub-category.ts";
 
-export const subCategoryQueryOptions = (subCategoryId: string) =>
+export const subCategoriesQueryOptions = (categoryId: number | null) =>
   queryOptions({
-    queryKey: ["subCategory", { subCategoryId }],
-    queryFn: () => getSubCategory(subCategoryId),
+    queryKey: ["subCategories", categoryId],
+    queryFn: () => getSubCategories(categoryId),
   });
-
-export const categoriesQueryOptions = () => {
-  queryOptions({
-    queryKey: ["subCategories"],
-    queryFn: () => getSubCategories(),
-  });
-};

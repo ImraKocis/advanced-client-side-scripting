@@ -7,9 +7,8 @@ export const billQueryOptions = (billId: string) =>
     queryFn: () => getBill(billId),
   });
 
-export const billsQueryOptions = () => {
+export const billsQueryOptions = (userId: string) =>
   queryOptions({
     queryKey: ["bills"],
-    queryFn: () => getBills(),
+    queryFn: () => getBills(userId),
   });
-};

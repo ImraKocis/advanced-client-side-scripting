@@ -1,15 +1,8 @@
 import { queryOptions } from "@tanstack/react-query";
-import { getItem, getItems } from "@/api/item/item.ts";
+import { getItems } from "@/api/item/item.ts";
 
-export const itemQueryOptions = (itemId: string) =>
-  queryOptions({
-    queryKey: ["item", { itemId }],
-    queryFn: () => getItem(itemId),
-  });
-
-export const itemsQueryOptions = () => {
+export const itemsQueryOptions = (billId: string) =>
   queryOptions({
     queryKey: ["items"],
-    queryFn: () => getItems(),
+    queryFn: () => getItems(billId),
   });
-};

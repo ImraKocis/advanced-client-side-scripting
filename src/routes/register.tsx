@@ -4,11 +4,13 @@ import {
   redirect,
   useRouter,
 } from "@tanstack/react-router";
-import { ReactElement, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth.ts";
+import { useToast } from "@/hooks/use-toast.ts";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { loginSchema } from "@/lib/loginSchema.ts";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect } from "react";
+import { Navigation } from "@/components/navigation.tsx";
 import {
   Form,
   FormControl,
@@ -20,55 +22,52 @@ import {
 import { Input } from "@/components/ui/input.tsx";
 import { Button } from "@/components/ui/button.tsx";
 import { Loader2 } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth.ts";
-import { useToast } from "@/hooks/use-toast.ts";
-import { Navigation } from "@/components/navigation.tsx";
+import { registerSchema } from "@/lib/registerSchema.ts";
 
 const fallback = "/profile" as const;
 
-export const Route = createFileRoute("/login")({
-  validateSearch: z.object({
-    redirect: z.string().optional().catch(""),
-  }),
-  beforeLoad: ({ context, search }) => {
+export const Route = createFileRoute("/register")({
+  beforeLoad: ({ context }) => {
     if (context.auth.isAuthenticated) {
-      throw redirect({ to: search.redirect || fallback });
+      throw redirect({ to: fallback });
     }
   },
-  component: Login,
+  component: Register,
 });
 
-function Login(): ReactElement {
-  const { login, isAuthenticated } = useAuth();
+function Register() {
+  const { register, isAuthenticated } = useAuth();
   const { toast } = useToast();
   const router = useRouter();
   const navigate = Route.useNavigate();
-  const search = Route.useSearch();
-  const form = useForm<z.infer<typeof loginSchema>>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<z.infer<typeof registerSchema>>({
+    resolver: zodResolver(registerSchema),
     defaultValues: {
+      userName: "",
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  async function onSubmit(data: z.infer<typeof loginSchema>) {
-    const loginResult = await login(data);
-    if (!loginResult) {
+  async function onSubmit(data: z.infer<typeof registerSchema>) {
+    const registerResult = await register(data);
+    if (!registerResult) {
       toast({
         title: "Something went wrong",
         description: "Please try again later",
         variant: "destructive",
       });
+      return;
     }
-    await router.invalidate();
+    await router.navigate({ to: "/login" });
   }
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate({ to: search.redirect || fallback });
+      navigate({ to: fallback });
     }
-  }, [isAuthenticated, search.redirect]);
+  }, [isAuthenticated]);
 
   return (
     <>
@@ -79,6 +78,20 @@ function Login(): ReactElement {
             className="space-y-4 w-full max-w-[500px] rounded-md flex flex-col justify-center items-center bg-white p-5"
             onSubmit={form.handleSubmit(onSubmit)}
           >
+            <FormField
+              control={form.control}
+              name="userName"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>User Name</FormLabel>
+                  <FormControl>
+                    <Input type="text" placeholder="johndoe123" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             <FormField
               control={form.control}
               name="email"
@@ -109,10 +122,23 @@ function Login(): ReactElement {
                 </FormItem>
               )}
             />
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem className="w-full">
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <div className="w-full flex gap-2 justify-center">
-              <p>Dont have a profile?</p>
+              <p>Already have a profile?</p>
               <span className="text-blue-600 hover:text-blue-800 transition duration-300 hover:cursor-pointer">
-                <Link to="/register">Register Now</Link>
+                <Link to="/login">Login</Link>
               </span>
             </div>
             <Button

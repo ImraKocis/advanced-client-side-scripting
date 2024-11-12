@@ -11,12 +11,21 @@
 // Import Routes
 
 import { Route as rootRoute } from './routes/__root'
+import { Route as RegisterImport } from './routes/register'
 import { Route as LoginImport } from './routes/login'
 import { Route as AuthImport } from './routes/_auth'
 import { Route as IndexImport } from './routes/index'
 import { Route as AuthProfileImport } from './routes/_auth.profile'
+import { Route as AuthItemsBillIdImport } from './routes/_auth.items.$billId'
+import { Route as AuthBillUserIdImport } from './routes/_auth.bill.$userId'
 
 // Create/Update Routes
+
+const RegisterRoute = RegisterImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRoute,
+} as any)
 
 const LoginRoute = LoginImport.update({
   id: '/login',
@@ -38,6 +47,18 @@ const IndexRoute = IndexImport.update({
 const AuthProfileRoute = AuthProfileImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthItemsBillIdRoute = AuthItemsBillIdImport.update({
+  id: '/items/$billId',
+  path: '/items/$billId',
+  getParentRoute: () => AuthRoute,
+} as any)
+
+const AuthBillUserIdRoute = AuthBillUserIdImport.update({
+  id: '/bill/$userId',
+  path: '/bill/$userId',
   getParentRoute: () => AuthRoute,
 } as any)
 
@@ -66,11 +87,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LoginImport
       parentRoute: typeof rootRoute
     }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterImport
+      parentRoute: typeof rootRoute
+    }
     '/_auth/profile': {
       id: '/_auth/profile'
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof AuthProfileImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/bill/$userId': {
+      id: '/_auth/bill/$userId'
+      path: '/bill/$userId'
+      fullPath: '/bill/$userId'
+      preLoaderRoute: typeof AuthBillUserIdImport
+      parentRoute: typeof AuthImport
+    }
+    '/_auth/items/$billId': {
+      id: '/_auth/items/$billId'
+      path: '/items/$billId'
+      fullPath: '/items/$billId'
+      preLoaderRoute: typeof AuthItemsBillIdImport
       parentRoute: typeof AuthImport
     }
   }
@@ -80,10 +122,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthRouteChildren {
   AuthProfileRoute: typeof AuthProfileRoute
+  AuthBillUserIdRoute: typeof AuthBillUserIdRoute
+  AuthItemsBillIdRoute: typeof AuthItemsBillIdRoute
 }
 
 const AuthRouteChildren: AuthRouteChildren = {
   AuthProfileRoute: AuthProfileRoute,
+  AuthBillUserIdRoute: AuthBillUserIdRoute,
+  AuthItemsBillIdRoute: AuthItemsBillIdRoute,
 }
 
 const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
@@ -92,14 +138,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/profile': typeof AuthProfileRoute
+  '/bill/$userId': typeof AuthBillUserIdRoute
+  '/items/$billId': typeof AuthItemsBillIdRoute
 }
 
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/profile': typeof AuthProfileRoute
+  '/bill/$userId': typeof AuthBillUserIdRoute
+  '/items/$billId': typeof AuthItemsBillIdRoute
 }
 
 export interface FileRoutesById {
@@ -107,15 +159,40 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_auth': typeof AuthRouteWithChildren
   '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
   '/_auth/profile': typeof AuthProfileRoute
+  '/_auth/bill/$userId': typeof AuthBillUserIdRoute
+  '/_auth/items/$billId': typeof AuthItemsBillIdRoute
 }
 
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '' | '/login' | '/profile'
+  fullPaths:
+    | '/'
+    | ''
+    | '/login'
+    | '/register'
+    | '/profile'
+    | '/bill/$userId'
+    | '/items/$billId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '' | '/login' | '/profile'
-  id: '__root__' | '/' | '/_auth' | '/login' | '/_auth/profile'
+  to:
+    | '/'
+    | ''
+    | '/login'
+    | '/register'
+    | '/profile'
+    | '/bill/$userId'
+    | '/items/$billId'
+  id:
+    | '__root__'
+    | '/'
+    | '/_auth'
+    | '/login'
+    | '/register'
+    | '/_auth/profile'
+    | '/_auth/bill/$userId'
+    | '/_auth/items/$billId'
   fileRoutesById: FileRoutesById
 }
 
@@ -123,12 +200,14 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthRoute: typeof AuthRouteWithChildren
   LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthRoute: AuthRouteWithChildren,
   LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
 }
 
 export const routeTree = rootRoute
@@ -145,7 +224,8 @@ export const routeTree = rootRoute
       "children": [
         "/",
         "/_auth",
-        "/login"
+        "/login",
+        "/register"
       ]
     },
     "/": {
@@ -154,14 +234,27 @@ export const routeTree = rootRoute
     "/_auth": {
       "filePath": "_auth.tsx",
       "children": [
-        "/_auth/profile"
+        "/_auth/profile",
+        "/_auth/bill/$userId",
+        "/_auth/items/$billId"
       ]
     },
     "/login": {
       "filePath": "login.tsx"
     },
+    "/register": {
+      "filePath": "register.tsx"
+    },
     "/_auth/profile": {
       "filePath": "_auth.profile.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/bill/$userId": {
+      "filePath": "_auth.bill.$userId.tsx",
+      "parent": "/_auth"
+    },
+    "/_auth/items/$billId": {
+      "filePath": "_auth.items.$billId.tsx",
       "parent": "/_auth"
     }
   }

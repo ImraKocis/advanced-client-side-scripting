@@ -4,8 +4,10 @@ export interface Product {
   id: number;
   guid: string;
   name: string;
-  surname: string;
-  permanentEmployee: boolean;
+  productNumber: string;
+  color: string;
+  subCategoryId: number;
+  price: number;
 }
 
 export async function getProduct(id: string): Promise<Product | null> {
