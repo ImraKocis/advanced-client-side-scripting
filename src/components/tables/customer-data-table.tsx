@@ -92,15 +92,28 @@ export function CustomerDataTable({
     setTData(sortedData);
   };
 
-  const handleSearch = () => {
-    const filteredData = customerData.filter(
-      (e) =>
+  // ES6 code LO1:
+  // const handleSearch = () => {
+  //   const filteredData = customerData.filter(
+  //     (e) =>
+  //       e.name.toLowerCase().includes(searchValue.toLowerCase()) ||
+  //       e.surname.toLowerCase().includes(searchValue.toLowerCase()),
+  //   );
+  //
+  //   setTData(filteredData);
+  // };
+
+  // ES5 code LO1:
+  function handleSearch() {
+    var filteredData = customerData.filter(function (e) {
+      return (
         e.name.toLowerCase().includes(searchValue.toLowerCase()) ||
-        e.surname.toLowerCase().includes(searchValue.toLowerCase()),
-    );
+        e.surname.toLowerCase().includes(searchValue.toLowerCase())
+      );
+    });
 
     setTData(filteredData);
-  };
+  }
 
   useEffect(() => {
     handleSort();
