@@ -1,15 +1,16 @@
 import * as React from "react";
 import { LoginData } from "@/lib/types/auth/login.ts";
 import { UserData } from "@/lib/types/auth/jwt.ts";
-import { API_AUTH_BASE_URL } from "@/lib/constants/api.ts";
+import { API_AUTH_BASE_URL, API_BASE_URL } from "@/lib/constants/api.ts";
 import { LoginResponse } from "@/lib/types/api/auth/login-response.ts";
 import { AuthContext } from "@/hooks/useAuth.ts";
-import { RegisterData } from "@/lib/types/auth/register.ts";
+import { RegisterData, UpdateData } from "@/lib/types/auth/register.ts";
 
 export interface AuthContextProps {
   isAuthenticated: boolean;
   login: (data: LoginData) => Promise<boolean>;
   register: (data: RegisterData) => Promise<boolean>;
+  update: (data: { userName: string; userId: string }) => Promise<boolean>;
   logout: () => Promise<void>;
   user: UserData | null;
 }
@@ -72,13 +73,29 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     [],
   );
 
+  const update = React.useCallback(
+    async (data: { userName: string; userId: string }): Promise<boolean> => {
+      const response = await fetch(`${API_BASE_URL}/User/${data.userId}`, {
+        method: "PATCH",
+        headers: { "Content-type": "application/json" },
+        body: JSON.stringify({
+          name: data.userName,
+        }),
+      });
+      if (!response.ok) return false;
+      const result: UpdateData = await response.json();
+      return await login({ ...result });
+    },
+    [login],
+  );
+
   React.useEffect(() => {
     setUser(getStoredUser());
   }, []);
 
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated, user, login, logout, register }}
+      value={{ isAuthenticated, user, login, logout, register, update }}
     >
       {children}
     </AuthContext.Provider>

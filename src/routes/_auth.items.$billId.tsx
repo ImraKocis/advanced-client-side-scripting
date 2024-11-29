@@ -58,8 +58,15 @@ function ItemsComponent(): ReactElement {
     subCategoryQuery.isFetching
   )
     return <div>Loading...</div>;
+  if (!bill)
+    return (
+      <div className="flex justify-center items-center p-20">
+        <h2 className="text-2xl font-semibold">
+          Bill with this ID dose not exists
+        </h2>
+      </div>
+    );
   if (
-    !bill ||
     !cards ||
     !customer ||
     !items ||

@@ -4,3 +4,10 @@ export interface RegisterData {
   password: string;
   confirmPassword: string;
 }
+
+export interface UpdateData {
+  id: number;
+  name: string;
+  email: string;
+  password: string;
+}

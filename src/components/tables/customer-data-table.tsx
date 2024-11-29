@@ -49,6 +49,10 @@ export function CustomerDataTable({
     setPage((prevPage) => Math.max(prevPage - 1, 1));
   };
 
+  const handlePageSelection = (page: number) => {
+    setPage(page);
+  };
+
   const handlePageSize = (size: number) => {
     setPerPage(size);
   };
@@ -254,6 +258,7 @@ export function CustomerDataTable({
         goToPreviousPage={goToPreviousPage}
         goToNextPage={goToNextPage}
         handlePageSize={handlePageSize}
+        handlePageSelection={handlePageSelection}
         currentPage={page}
         totalPages={totalPages}
         pageSize={perPage}

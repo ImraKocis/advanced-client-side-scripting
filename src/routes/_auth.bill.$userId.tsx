@@ -23,18 +23,54 @@ export function BillComponent(): ReactElement {
   const cardsQuery = useSuspenseQuery(cardsQueryOptions);
   const bills = billsQuery.data;
   const cards = cardsQuery.data;
+  const customer = customerQuery.data;
   if (
     cardsQuery.isFetching ||
     billsQuery.isFetching ||
     customerQuery.isFetching
   )
     return <div>Loading...</div>;
-  if (!bills || !cards) return <div>Something went wrong</div>;
+  if (billsQuery.error) {
+    return (
+      <div className="flex flex-col w-full justify-center items-center py-12 px-20">
+        <h2>Something went wrong wih bills</h2>
+        <p>{billsQuery.error.name}</p>
+        <p>{billsQuery.error.message}</p>
+      </div>
+    );
+  }
+  if (cardsQuery.error) {
+    return (
+      <div className="flex flex-col w-full justify-center items-center py-12 px-20">
+        <h2>Something went wrong with cards</h2>
+        <p>{cardsQuery.error.name}</p>
+        <p>{cardsQuery.error.message}</p>
+      </div>
+    );
+  }
+  if (customerQuery.error) {
+    return (
+      <div className="flex flex-col w-full justify-center items-center py-12 px-20">
+        <h2>Something went wrong with customer</h2>
+        <p>{customerQuery.error.name}</p>
+        <p>{customerQuery.error.message}</p>
+      </div>
+    );
+  }
+  if (!customer) {
+    return (
+      <div className="flex justify-center items-center p-20">
+        <h2 className="font-semibold text-2xl">This user dose not exists</h2>
+      </div>
+    );
+  }
   return (
     <div className="flex flex-col w-full xxl:px-0 px-4 max-w-wrapper-desktop mx-auto">
-      <h1 className="font-semibold text-3xl mt-12 mb-4">{`${customerQuery.data?.name} ${customerQuery.data?.surname}`}</h1>
+      <h1 className="font-semibold text-3xl mt-12 mb-4">{`${customer?.name} ${customer?.surname}`}</h1>
       <h2 className="text-2xl">Bills</h2>
-      <BillDataTable billData={bills} creditCardData={cards} />
+      {bills && bills.length > 1 ? (
+        <BillDataTable billData={bills} creditCardData={cards!} />
+      ) : null}
     </div>
   );
 }
